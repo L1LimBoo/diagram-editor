@@ -77,7 +77,6 @@ export class ExplorerNodeItem extends ExplorerItem {
       const columns = this._calcColumns();
       if (columns) this.applyLayout({ columns });
     };
-
     if (this.graph) loadNode();
     else {
       const disposable = this.onDidMount(loadNode);
@@ -87,11 +86,15 @@ export class ExplorerNodeItem extends ExplorerItem {
 
   /** 设置布局 */
   applyLayout(options?: LayoutOptions) {
+    console.log(options);
     const graph = this.graph;
     if (graph) {
+      //把width置入grid
+      const { width } = this._containerRect ?? {};
+      defaultLayoutOptions.width = width || 320;
       // `resizeToFit` 必须是 `false`, 否则多次调用 `applyLayout` 时，会不断缩小节点
       const layout = { ...defaultLayoutOptions, ...options, resizeToFit: false };
-      const columns = layout.columns ?? 0;
+      const columns = layout.columns ?? 1;
       if (columns < 1 || columns > graph.getCellCount()) return;
       grid(graph.model as any, layout);
       this.fitToContent();

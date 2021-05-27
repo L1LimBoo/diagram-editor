@@ -1,6 +1,7 @@
 import type { Node, Model } from '@antv/x6';
 
 export interface LayoutOptions extends Node.SetPositionOptions {
+  width?: number; //元素宽度
   columns?: number;
   columnWidth?: number | 'auto' | 'compact';
   rowHeight?: number | 'auto' | 'compact';
@@ -23,9 +24,10 @@ export interface LayoutOptions extends Node.SetPositionOptions {
 }
 
 export const grid = (model: Model, options: LayoutOptions = {}) => {
+  const width = options.width; //宽度
   const nodes = model.getNodes();
-  const columns = options.columns ?? 1;
-  const rows = Math.ceil(nodes.length / columns);
+  let columns = options.columns ?? 0;
+  let rows = Math.ceil(nodes.length / columns);
   const dx = options.dx ?? 0;
   const dy = options.dy ?? 0;
   const centre = options.center !== false;
@@ -36,23 +38,18 @@ export const grid = (model: Model, options: LayoutOptions = {}) => {
 
   let columnWidth = options.columnWidth;
 
-  if (columnWidth === 'compact') {
-    for (let j = 0; j < columns; j += 1) {
-      const items = getNodesInColumn(nodes, j, columns);
-      columnWidths.push(getMaxDim(items, 'width') + dx);
-    }
-  } else {
-    if (columnWidth == null || columnWidth === 'auto') {
-      columnWidth = getMaxDim(nodes, 'width') + dx;
-    }
-
-    for (let i = 0; i < columns; i += 1) {
-      columnWidths.push(columnWidth);
-    }
+  //计算列(宽度)
+  if (width) {
+    columnWidth = getMaxDim(nodes, 'width') + dx;
+    columns = Math.floor(width / columnWidth);
   }
-
+  for (let i = 0; i < columns; i += 1) {
+    columnWidths.push(columnWidth as number);
+  }
   const columnLefts = accumulate(columnWidths, marginX);
 
+  //计算行(高度)
+  rows = Math.ceil(nodes.length / columns);
   const rowHeights: number[] = [];
   let rowHeight = options.rowHeight;
   if (rowHeight === 'compact') {
@@ -64,7 +61,6 @@ export const grid = (model: Model, options: LayoutOptions = {}) => {
     if (rowHeight == null || rowHeight === 'auto') {
       rowHeight = getMaxDim(nodes, 'height') + dy;
     }
-
     for (let i = 0; i < rows; i += 1) {
       rowHeights.push(rowHeight);
     }
