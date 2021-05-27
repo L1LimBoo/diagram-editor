@@ -11,8 +11,6 @@
   <body>
     <div id="app" style="height: 100vh"></div>
     <script type="module">
-      // import { DiagramEditor, ExplorerNodeItem, builtInPlugin } from './dist/diagram-editor.es';
-      // import './dist/style.css'
       import { DiagramEditor, ExplorerNodeItem } from './src/index';
       import { nodeCountPlugin } from '@diagram-editor/plugin-cell-count';
       import { graphConfigPlugin } from '@diagram-editor/plugin-graph-config';
@@ -48,12 +46,40 @@
         },
       };
 
-      const a = new ExplorerNodeItem({ title: '测试' });
-      a.load(node, node, node, node, node);
+      const rect = {
+        width: 150,
+        height: 100,
+        attrs: {
+          body: {
+            fill: 'blue',
+          },
+          label: {
+            text: 'Hello',
+            fill: 'white',
+          },
+        },
+      };
 
-      setTimeout(() => {
-        a.load(node, node, node, node, node);
-      }, 3000);
+      const node1 = {
+        width: 80,
+        height: 40,
+        attrs: {
+          body: {
+            fill: 'gray',
+          },
+          label: {
+            text: '1',
+            fill: 'white',
+          },
+        },
+      };
+
+      const a = new ExplorerNodeItem({ title: '测试' });
+      a.load(node);
+
+      // setTimeout(() => {
+      //   a.load(node1,node,node1,node,node,rect);
+      // }, 3000);
 
       const editor = new DiagramEditor();
       editor.explorer.load('x', a);
